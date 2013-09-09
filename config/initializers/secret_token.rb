@@ -9,4 +9,19 @@
 
 # Make sure your secret_key_base is kept private
 # if you're sharing your code publicly.
-Qjob::Application.config.secret_key_base = 'ae09ef37972fef6e7627c8219579b0dc6ec8e79e29b5a57e0d99e61f397d305d9d779acf012f67c81d976c4f7a4a13d720c28359359cd3892c71eadd77e7185b'
+require 'securerandom'
+
+def secure_token
+  token_file = Rails.root.join('.secret')
+  if File.exist?(token_file)
+    # Use the existing token.
+    File.read(token_file).chomp
+  else
+    # Generate a new token and store it in token_file.
+    token = SecureRandom.hex(64)
+    File.write(token_file, token)
+    token
+  end
+end
+
+Qjob::Application.config.secret_key_base = secure_token
